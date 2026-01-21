@@ -27,24 +27,6 @@ def divide(a, b):
     return a / b
 
 
-def calculate_velocity(distance: float, time: float) -> float:
-    """Calculate velocity given distance and time.
-    
-    Args:
-        distance: The distance traveled (in any unit).
-        time: The time taken (in any unit).
-    
-    Returns:
-        The velocity (distance / time).
-    
-    Raises:
-        ValueError: If time is less than or equal to zero.
-    """
-    if time <= 0:
-        raise ValueError("Time must be greater than zero")
-    return distance / time
-
-
 def main():
     """Interactive calculator interface."""
     print("Simple Calculator")
