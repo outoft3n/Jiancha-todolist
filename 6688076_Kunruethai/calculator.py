@@ -73,7 +73,5 @@ def calculate_velocity(distance: float, time: float) -> float:
         raise ValueError("Time must be greater than zero")
     return distance / time
 
-
-
 if __name__ == "__main__":
     main()
