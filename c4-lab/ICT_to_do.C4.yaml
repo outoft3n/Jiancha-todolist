@@ -1,0 +1,148 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SlavaVedernikov/C4InterFlow/refs/heads/master/C4InterFlow/schema.json
+
+ICTtodo:
+  SoftwareSystems:
+    ICTToDoList:
+      Label: ICT To Do List
+      Description: Task management system for ICT e-learning environment
+      Containers:
+
+        WebApp:
+          Label: Web App
+          Technology: React SPA
+          ContainerType: Web Application
+          Interfaces:
+            Uses:
+              Flows:
+                - Type: Use
+                  Expression: Containers.WebAPI.Interfaces.HTTPSAPI
+
+        MobileApp:
+          Label: Mobile App
+          Technology: Flutter
+          ContainerType: Mobile Application
+          Interfaces:
+            Uses:
+              Flows:
+                - Type: Use
+                  Expression: Containers.WebAPI.Interfaces.HTTPSAPI
+
+        WebAPI:
+          Label: Web API
+          Technology: FastAPI
+          ContainerType: Api
+          Interfaces:
+            HTTPSAPI:
+              Description: REST API over HTTPS/JSON
+
+          Components:
+            AuthenticationAuthorization:
+              Label: Authentication & Authorization
+              Technology: FastAPI
+              Interfaces:
+                AuthorizesRequests:
+                  Flows:
+                    - Type: Use
+                      Expression: Components.TaskManagement.Interfaces.ManageTasks
+
+            TaskManagement:
+              Label: Task Management
+              Technology: FastAPI
+              Interfaces:
+                ManageTasks:
+                  Flows:
+                    - Type: Use
+                      Expression: Containers.Database.Interfaces.TaskData
+
+            MyCoursesSyncOrchestrator:
+              Label: MyCourses Sync Orchestrator
+              Technology: FastAPI
+              Interfaces:
+                SyncWorkflow:
+                  Flows:
+                    - Type: Use
+                      Expression: Components.MyCoursesClient.Interfaces.CallMyCourses
+                    - Type: Use
+                      Expression: Components.MappingComponent.Interfaces.MappedData
+                    - Type: Use
+                      Expression: Components.SyncHistory.Interfaces.RecordSync
+                    - Type: Use
+                      Expression: Containers.Database.Interfaces.TaskData
+
+            MyCoursesClient:
+              Label: MyCourses Client
+              Technology: HTTPS/JSON
+              Interfaces:
+                CallMyCourses:
+                  Flows:
+                    - Type: Use
+                      Expression: ..MyCourses.Interfaces.RetrieveAssignments
+
+            MappingComponent:
+              Label: Mapping Component
+              Interfaces:
+                MappedData:
+                  Description: Maps MyCourses data to internal task model
+
+            SyncHistory:
+              Label: Sync History
+              Interfaces:
+                RecordSync:
+                  Flows:
+                    - Type: Use
+                      Expression: Containers.Database.Interfaces.SyncLogData
+
+        Database:
+          Label: Database
+          Technology: PostgreSQL
+          ContainerType: Database
+          Interfaces:
+            TaskData:
+              Label: Task Data
+            SyncLogData:
+              Label: Sync History Data
+
+        MyCoursesConnector:
+          Label: MyCourses Connector
+          Technology: Backend Module
+          ContainerType: Api
+          Interfaces:
+            ConnectorAPI:
+              Flows:
+                - Type: Use
+                  Expression: ..MyCourses.Interfaces.RetrieveAssignments
+
+    MyCourses:
+      Label: MyCourses
+      Description: External ICT e-learning system
+      Interfaces:
+        RetrieveAssignments:
+          Label: Retrieve courses, assignments, and submission status
+          Description: HTTPS/JSON API
+
+  Actors:
+    Student:
+      Activities:
+        UseWebApp:
+          Flows:
+            - Type: Use
+              Expression: SoftwareSystems.ICTToDoList.Containers.WebApp.Interfaces.Uses
+        UseMobileApp:
+          Flows:
+            - Type: Use
+              Expression: SoftwareSystems.ICTToDoList.Containers.MobileApp.Interfaces.Uses
+
+    Instructor:
+      Activities:
+        UseWebApp:
+          Flows:
+            - Type: Use
+              Expression: SoftwareSystems.ICTToDoList.Containers.WebApp.Interfaces.Uses
+
+    SystemAdministrator:
+      Label: System Administrator
+      Activities:
+        AdministerSystem:
+          Flows:
+            - Type: Use
+              Expression: SoftwareSystems.ICTToDoList.Containers.WebApp.Interfaces.Uses
