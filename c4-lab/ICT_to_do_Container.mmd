@@ -1,0 +1,30 @@
+C4Container
+title Container diagram for ICT To Do List
+
+Person(Student, "Student", "Manages personal tasks and tracks course work by syncing assignments from MyCourses")
+Person(Instructor, "Instructor", "Views teaching-related tasks and monitors assignment deadlines for taught courses")
+Person(Admin, "System Administrator", "Manages system configuration, user accounts, and monitors sync health")
+
+System_Ext(MyCourses, "MyCourses", "External e-learning system that owns course, assignment, and submission data")
+
+System_Boundary(ICT, "ICT To Do List") {
+  Container(WebApp, "Web App", "React SPA", "Browser-based UI for task management and admin interface")
+  Container(MobileApp, "Mobile App", "Flutter (iOS/Android)", "Mobile UI for task management and sync")
+  Container(WebAPI, "Web API", "Python FastAPI (REST JSON)", "Backend service exposing REST endpoints over HTTPS/JSON")
+  ContainerDb(DB, "Database", "PostgreSQL", "Stores user profiles, tasks (manual/imported), sync settings, sync history")
+  Container(Connector, "MyCourses Connector", "Python", "Integration module that calls MyCourses web services, parses JSON, maps data into internal task records")
+}
+
+Rel(Student, WebApp, "Uses", "HTTPS/JSON")
+Rel(Student, MobileApp, "Uses", "HTTPS/JSON")
+Rel(Instructor, WebApp, "Uses", "HTTPS/JSON")
+Rel(Admin, WebApp, "Uses (admin interface)", "HTTPS/JSON")
+
+Rel(WebApp, WebAPI, "Makes API calls", "HTTPS/JSON")
+Rel(MobileApp, WebAPI, "Makes API calls", "HTTPS/JSON")
+
+Rel(WebAPI, DB, "Reads/Writes", "SQL (ORM e.g., SQLAlchemy)")
+Rel(WebAPI, Connector, "Calls internal interface (sync)", "Internal call or internal HTTP")
+
+Rel(Connector, MyCourses, "Uses MyCourses web services", "HTTPS/JSON")
+Rel(Connector, DB, "Reads/Writes (sync data & logs)", "SQL")

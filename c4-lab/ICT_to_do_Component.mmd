@@ -1,0 +1,42 @@
+C4Component
+title Component diagram for Web API (ICT To Do List)
+
+Container(WebApp, "Web App", "React SPA", "Web client + admin interface")
+Container(MobileApp, "Mobile App", "Flutter (iOS/Android)", "Mobile client")
+ContainerDb(DB, "Database", "PostgreSQL", "User profiles, tasks, sync settings, sync history")
+System_Ext(MyCourses, "MyCourses", "External e-learning system (courses, assignments, submissions)")
+
+Container_Boundary(WebAPI, "Web API (Python FastAPI)") {
+
+  Component(Auth, "Authentication & Authorization", "OAuth2/OIDC or JWT", "Login, token validation, role-based access control (Student/Instructor/Admin)")
+  Component(TaskMgmt, "Task Management", "Service", "CRUD tasks; manual vs imported; enforce privacy rules; mark done")
+  Component(SyncOrch, "MyCourses Sync Orchestrator", "Service", "Runs sync workflow; calls connector; deduplicates by assignmentId; updates tasks safely")
+  Component(SyncHistory, "Sync History", "Service", "Records sync results (timestamp, status, error); provides sync health for admin")
+  Component(DataAccess, "Data Access", "Repository/ORM", "PostgreSQL access via ORM; controlled transactions")
+
+  Component(ConnectorIface, "MyCourses Connector Interface", "Internal call / internal HTTP", "Invokes connector to fetch courses, assignments, submission status")
+  Component(MyCoursesClient, "MyCourses Client", "HTTPS/JSON client", "Calls MyCourses web services; handles HTTPS + JSON parsing")
+  Component(Mapper, "Mapping Component", "Mapper", "Maps MyCourses data to internal task model (title, due date, status, assignmentId)")
+}
+
+Rel(WebApp, Auth, "Sign-in / token usage", "HTTPS/JSON")
+Rel(MobileApp, Auth, "Sign-in / token usage", "HTTPS/JSON")
+
+Rel(WebApp, TaskMgmt, "View/Create/Edit/Delete/Mark done tasks", "HTTPS/JSON")
+Rel(MobileApp, TaskMgmt, "View/Create/Edit/Delete/Mark done tasks", "HTTPS/JSON")
+
+Rel(WebApp, SyncOrch, "Start sync / view sync status", "HTTPS/JSON")
+Rel(MobileApp, SyncOrch, "Start sync / refresh tasks", "HTTPS/JSON")
+
+Rel(TaskMgmt, DataAccess, "Persist/query tasks", "ORM/SQL")
+Rel(SyncOrch, DataAccess, "Upsert imported tasks (dedupe by MyCourses assignmentId)", "ORM/SQL")
+Rel(SyncHistory, DataAccess, "Persist/query sync history", "ORM/SQL")
+Rel(DataAccess, DB, "Reads/Writes", "SQL")
+
+Rel(SyncOrch, ConnectorIface, "Trigger sync + request data", "Internal call / internal HTTP")
+Rel(ConnectorIface, MyCoursesClient, "Fetch courses/assignments/submissions", "In-process")
+Rel(MyCoursesClient, MyCourses, "Retrieve courses/assignments/submission status", "HTTPS/JSON")
+Rel(MyCoursesClient, Mapper, "Provide raw data for mapping", "In-process")
+Rel(Mapper, SyncOrch, "Return mapped tasks + submission status", "In-process")
+
+Rel(SyncOrch, SyncHistory, "Record result / failures (downtime, errors)", "In-process")
