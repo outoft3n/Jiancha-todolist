@@ -1,0 +1,36 @@
+C4Component
+    title Component diagram for ICT To Do List - Web API
+    
+    Container_Ext(clients, "Web App / Mobile App", "React / Flutter")
+    Container_Ext(database, "PostgreSQL", "Database")
+    System_Ext(mycourses, "MyCourses", "External e-learning system")
+    
+    Container_Boundary(web_api, "Web API", "FastAPI Python") {
+        Component(auth, "Authentication & Authorization", "Python Module", "Handles login, token validation, and access control checks")
+        Component(task_mgmt, "Task Management", "Python Module", "Handles CRUD operations for manual and imported tasks")
+        Component(sync_orch, "MyCourses Sync Orchestrator", "Python Module", "Manages sync workflow and decides when to call external services and how to update tasks")
+        Component(mycourses_client, "MyCourses Client", "Python Module", "Calls MyCourses web services and handles HTTPS requests and JSON parsing")
+        Component(mapping, "Mapping", "Python Module", "Converts MyCourses assignment and submission data into internal task model")
+        Component(sync_hist, "Sync History", "Python Module", "Records sync outcomes and provides data for admin monitoring")
+        Component(data_access, "Data Access", "Python Module", "Provides repository functions for PostgreSQL access and ensures controlled transactions")
+    }
+    
+    Rel(clients, auth, "Makes REST API requests")
+    Rel(auth, task_mgmt, "Routes authenticated task requests")
+    Rel(auth, sync_orch, "Routes authenticated sync requests")
+    
+    Rel(task_mgmt, data_access, "Reads/writes task data")
+    
+    Rel(sync_orch, mycourses_client, "Calls to retrieve data")
+    Rel(sync_orch, mapping, "Passes data to map")
+    Rel(sync_orch, task_mgmt, "Updates tasks with mapped data")
+    Rel(sync_orch, sync_hist, "Records sync results")
+    
+    Rel(mycourses_client, mycourses, "Retrieves courses, assignments, submission status", "HTTPS/JSON")
+    Rel(mapping, sync_orch, "Returns mapped task data")
+    
+    Rel(sync_hist, data_access, "Stores sync history")
+    
+    Rel(data_access, database, "Reads/writes data", "SQL via SQLAlchemy ORM")
+    
+    UpdateLayoutConfig($c4ShapeInRow="3")

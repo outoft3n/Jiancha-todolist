@@ -1,0 +1,29 @@
+C4Container
+    title Container diagram for ICT To Do List System
+    
+    Person(student, "Student", "Manages personal tasks and tracks course work by syncing assignments from MyCourses")
+    Person(instructor, "Instructor", "Views teaching-related tasks and monitors assignment deadlines for taught courses")
+    Person(admin, "System Administrator", "Manages system configuration, user accounts, and monitors sync health")
+    
+    System_Boundary(ict_todo, "ICT To Do List System") {
+        Container(web_app, "Web App", "React SPA", "Browser-based UI for students, instructors, and admins to manage tasks")
+        Container(mobile_app, "Mobile App", "Flutter", "Cross-platform native mobile UI for iOS and Android to manage tasks")
+        Container(web_api, "Web API", "Python FastAPI", "Provides REST API with JSON; handles authentication, task management, and sync orchestration")
+        Container(database, "Database", "PostgreSQL", "Stores user profiles, tasks, sync settings, and sync history")
+        Container(connector, "MyCourses Connector", "Python Module", "Calls MyCourses web services, parses JSON, maps external data to internal task records")
+    }
+    
+    System_Ext(mycourses, "MyCourses", "External ICT e-learning system that owns course, assignment, and submission data")
+    
+    Rel(student, web_app, "Uses to view and manage tasks")
+    Rel(student, mobile_app, "Uses to view and manage tasks")
+    Rel(instructor, web_app, "Uses to view tasks and monitor deadlines")
+    Rel(admin, web_app, "Uses admin interface to manage system")
+    
+    Rel(web_app, web_api, "Makes REST API calls", "HTTPS/JSON")
+    Rel(mobile_app, web_api, "Makes REST API calls", "HTTPS/JSON")
+    Rel(web_api, database, "Reads and writes data", "SQL via ORM (SQLAlchemy)")
+    Rel(web_api, connector, "Calls connector to sync assignments", "Direct function call or internal HTTP")
+    Rel(connector, mycourses, "Retrieves courses, assignments, submission status", "HTTPS/JSON")
+    
+    UpdateLayoutConfig($c4ShapeInRow="2")
