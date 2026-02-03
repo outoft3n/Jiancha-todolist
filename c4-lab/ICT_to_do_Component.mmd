@@ -12,9 +12,11 @@ Container(api, "Web API", "FastAPI") {
   Component(data, "Data Access")
 }
 
-Rel(auth, task, "Authorizes")
+Rel(auth, task, "Authorizes requests")
 Rel(task, data, "CRUD tasks")
-Rel(sync, client, "Calls")
-Rel(client, mapper, "Maps data")
-Rel(sync, history, "Records results")
-Rel(task, history, "Reads sync status")
+Rel(sync, client, "Calls MyCourses APIs")
+Rel(client, mapper, "Parses and maps JSON")
+Rel(mapper, sync, "Provides mapped task data")
+Rel(sync, history, "Records sync results")
+Rel(sync, data, "Reads/writes imported tasks")
+Rel(history, data, "Stores sync logs")
