@@ -1,0 +1,22 @@
+C4Container
+title Container diagram for ICT To Do List
+
+Person(student, "Student")
+
+System_Boundary(ict, "ICT To Do List") {
+  Container(web, "Web App", "React SPA")
+  Container(mobile, "Mobile App", "Flutter")
+  Container(api, "Web API", "FastAPI")
+  Container(db, "Database", "PostgreSQL")
+  Container(connector, "MyCourses Connector", "Backend module")
+}
+
+System_Ext(mycourses, "MyCourses")
+
+Rel(student, web, "Uses")
+Rel(student, mobile, "Uses")
+Rel(web, api, "HTTPS/JSON")
+Rel(mobile, api, "HTTPS/JSON")
+Rel(api, db, "Reads/Writes")
+Rel(api, connector, "Calls")
+Rel(connector, mycourses, "HTTPS/JSON")

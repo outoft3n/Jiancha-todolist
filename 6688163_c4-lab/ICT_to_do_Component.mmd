@@ -1,0 +1,20 @@
+C4Component
+title Component diagram for Web API
+
+Container(api, "Web API", "FastAPI") {
+
+  Component(auth, "Authentication & Authorization")
+  Component(task, "Task Management")
+  Component(sync, "MyCourses Sync Orchestrator")
+  Component(client, "MyCourses Client")
+  Component(mapper, "Mapping Component")
+  Component(history, "Sync History")
+  Component(data, "Data Access")
+}
+
+Rel(auth, task, "Authorizes")
+Rel(task, data, "CRUD tasks")
+Rel(sync, client, "Calls")
+Rel(client, mapper, "Maps data")
+Rel(sync, history, "Records results")
+Rel(task, history, "Reads sync status")

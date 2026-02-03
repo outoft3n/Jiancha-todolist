@@ -1,0 +1,14 @@
+C4Context
+title System Context diagram for ICT To Do List
+
+Person(student, "Student", "Manages personal tasks and tracks coursework")
+Person(instructor, "Instructor", "Views teaching-related tasks and deadlines")
+Person(admin, "System Administrator", "Manages configuration and sync health")
+
+System(ict, "ICT To Do List", "Task management system for ICT e-learning")
+System_Ext(mycourses, "MyCourses", "External e-learning system")
+
+Rel(student, ict, "Uses", "Web/Mobile")
+Rel(instructor, ict, "Uses")
+Rel(admin, ict, "Administers")
+Rel(ict, mycourses, "Syncs assignments and submission status", "HTTPS/JSON")
