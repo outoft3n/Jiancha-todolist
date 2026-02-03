@@ -1,0 +1,27 @@
+C4Component
+    title Component diagram for ICT To Do List - Web API
+    Container_Boundary(web_api, "Web API") {
+        Component(auth_component, "Authentication & Authorization", "Python Module", "Handles login, token validation, and access control checks")
+        Component(task_mgmt_component, "Task Management", "Python Module", "Handles CRUD operations for manual and imported tasks")
+        Component(sync_orchestrator, "MyCourses Sync Orchestrator", "Python Module", "Manages sync workflow and decides when to call external services")
+        Component(mycourses_client, "MyCourses Client", "Python Module", "Calls MyCourses web services, handles HTTPS requests and JSON parsing")
+        Component(mapping_component, "Mapping", "Python Module", "Converts MyCourses assignment and submission data into internal task model")
+        Component(sync_history_component, "Sync History", "Python Module", "Records sync outcomes and provides data for admin monitoring")
+        Component(data_access, "Data Access", "Python Module / SQLAlchemy", "Provides repository functions for PostgreSQL access and manages transactions")
+    }
+    
+    ContainerDb(database, "Database", "PostgreSQL", "Stores user data and tasks")
+    System_Ext(mycourses, "MyCourses", "External e-learning system")
+    
+    Rel(auth_component, data_access, "Uses for user data access")
+    Rel(task_mgmt_component, data_access, "Uses for task CRUD operations")
+    Rel(task_mgmt_component, auth_component, "Uses for access control")
+    Rel(sync_orchestrator, mycourses_client, "Calls to retrieve data")
+    Rel(sync_orchestrator, mapping_component, "Calls to map data")
+    Rel(sync_orchestrator, task_mgmt_component, "Calls to create/update tasks")
+    Rel(sync_orchestrator, sync_history_component, "Records sync outcomes")
+    Rel(mycourses_client, mycourses, "Retrieves courses and assignments", "JSON/HTTPS")
+    Rel(mapping_component, sync_history_component, "Logs mapping operations")
+    Rel(data_access, database, "Reads and writes data", "SQL")
+    
+    UpdateLayoutConfig($c4ShapeInRow="2")
